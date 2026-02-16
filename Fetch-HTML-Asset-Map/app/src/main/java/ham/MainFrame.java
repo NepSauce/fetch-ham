@@ -3,8 +3,14 @@
  */
 package ham;
 
+import javax.swing.SwingUtilities;
+
+import ham.swing.frames.HAMFrame;;
+
 public class MainFrame {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        SwingUtilities.invokeLater(() -> {
+            HAMFrame hamFrame = new HAMFrame();
+        });
     }
 }
