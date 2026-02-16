@@ -4,11 +4,7 @@
 package ham;
 
 public class MainFrame {
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) {
-        System.out.println(new MainFrame().getGreeting());
+        System.out.println("Hello World!");
     }
 }
