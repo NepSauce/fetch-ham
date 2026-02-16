@@ -25,6 +25,15 @@ dependencies {
     implementation libs.guava
 }
 
+// Source - https://stackoverflow.com/a/20956456
+// Posted by leeor, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-02-16, License - CC BY-SA 4.0
+
+dependencies {
+    implementation files('libs/jsoup-1.22.1.jar')
+}
+
+
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
@@ -34,7 +43,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'fetch.html.access.middleware.App'
+    mainClass = 'ham.MainFrame'
 }
 
 tasks.named('test') {
