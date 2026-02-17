@@ -31,32 +31,50 @@ public class HAMFrame extends JFrame{
         // menuBar.add(Box.createRigidArea(new Dimension(165, 0)));
 
         // Create menus
+        JMenu hamMenu = new JMenu("HAM");
         JMenu fileMenu = new JMenu("File");
-        JMenu editMenu = new JMenu("Edit");
         JMenu helpMenu = new JMenu("Help");
+
+        // Add menu items to Ham menu
+        JMenuItem buildInfoItem = new JMenuItem("Build Info");
+        JMenuItem settingsItem = new JMenuItem("Settings");
+        JMenuItem exitItem = new JMenuItem("Exit");
+        hamMenu.add(buildInfoItem);
+        hamMenu.add(settingsItem);
+        hamMenu.addSeparator();
+        hamMenu.add(exitItem);
 
         // Add menu items to File menu
         JMenuItem openItem = new JMenuItem("Open");
         JMenuItem saveItem = new JMenuItem("Save");
-        JMenuItem exitItem = new JMenuItem("Exit");
         fileMenu.add(openItem);
         fileMenu.add(saveItem);
-        fileMenu.addSeparator();
-        fileMenu.add(exitItem);
-
-        // Add menu items to Edit menu
-        JMenuItem copyItem = new JMenuItem("Copy");
-        JMenuItem pasteItem = new JMenuItem("Paste");
-        editMenu.add(copyItem);
-        editMenu.add(pasteItem);
 
         // Add menu items to Help menu
         JMenuItem aboutItem = new JMenuItem("About");
         helpMenu.add(aboutItem);
 
+        JMenu hamBugMenu = new JMenu("HamBug");
+        JMenuItem analysisItem = new JMenuItem("Analysis");
+        JMenuItem healthItem = new JMenuItem("Health");
+        JMenuItem rulesItem = new JMenuItem("Rules");
+        hamBugMenu.add(analysisItem);
+        hamBugMenu.add(healthItem);
+        hamBugMenu.add(rulesItem);
+
+        JMenu windowMenu = new JMenu("Window");
+        JMenuItem openNewWindowItem = new JMenuItem("New");
+        JMenuItem clearWindowItem = new JMenuItem("Clear");
+        JMenuItem refreshWindowItem = new JMenuItem("Refresh");
+        windowMenu.add(openNewWindowItem);
+        windowMenu.add(clearWindowItem);
+        windowMenu.add(refreshWindowItem);
+
         // Add menus to the menu bar
+        menuBar.add(hamMenu);
         menuBar.add(fileMenu);
-        menuBar.add(editMenu);
+        menuBar.add(hamBugMenu);
+        menuBar.add(windowMenu);
         menuBar.add(helpMenu);
 
         // Set the menu bar for the frame
