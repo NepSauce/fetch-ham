@@ -2,7 +2,6 @@ package ham.swing.frames;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.io.File;
 
 import javax.swing.ImageIcon;
@@ -13,6 +12,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import ham.swing.panels.LogoPanel;
+import ham.swing.panels.URLBasePanel;
 
 public class HAMFrame extends JFrame{
     public HAMFrame() {
@@ -80,11 +80,27 @@ public class HAMFrame extends JFrame{
         // Set the menu bar for the frame
         setJMenuBar(menuBar);
 
-        LogoPanel logoPanel = new LogoPanel();
-        JPanel logoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        logoWrapper.add(logoPanel.getLogoHeaderPanel());
+        // ...existing code...
 
-        // Add logoWrapper instead of logoPanel directly
-        add(logoWrapper, BorderLayout.PAGE_START);
+        LogoPanel logoPanel = new LogoPanel();
+        URLBasePanel urlBasePanel = new URLBasePanel();
+
+        // Create a horizontal wrapper panel
+        JPanel topWrapper = new JPanel();
+        topWrapper.setLayout(new BorderLayout());
+        topWrapper.setBackground(Color.WHITE);
+
+        // Add logo to the left
+        topWrapper.add(logoPanel.getLogoHeaderPanel(), BorderLayout.WEST);
+
+        // Add URLBasePanel to the center/right
+        topWrapper.add(urlBasePanel.getPanel(), BorderLayout.CENTER);
+
+        // Add the wrapper to the top of the frame
+        add(topWrapper, BorderLayout.PAGE_START);
+
+        // ...rest of your code...
+
+        
     }
 }
