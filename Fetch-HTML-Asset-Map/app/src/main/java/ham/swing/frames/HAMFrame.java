@@ -2,10 +2,12 @@ package ham.swing.frames;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import ham.swing.panels.LogoPanel;
 
@@ -23,8 +25,10 @@ public class HAMFrame extends JFrame{
         getContentPane().setBackground(new Color(238,238,238,255));
 
         LogoPanel logoPanel = new LogoPanel();
-        add(logoPanel.getLogoHeaderPanel());
+        JPanel logoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        logoWrapper.add(logoPanel.getLogoHeaderPanel());
 
-        setLayout(null);
+        // Add logoWrapper instead of logoPanel directly
+        add(logoWrapper, BorderLayout.PAGE_START);
     }
 }

@@ -1,6 +1,7 @@
 package ham.swing.panels;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Image;
 import java.io.File;
 
@@ -21,7 +22,7 @@ public class LogoPanel{
     private JLabel nameLabel2;
 
     public LogoPanel() {
-        headerPanel = new JPanel();
+        headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
         logoFile = new File("media/fetch_ham_logo.png");
         logoIcon = new ImageIcon(logoFile.getPath());
         scaledImage = logoIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
@@ -34,19 +35,12 @@ public class LogoPanel{
         nameLabel2.setFont(new java.awt.Font("Montserrat", java.awt.Font.BOLD, 20));
         nameLabel2.setForeground(new Color(158,54,84, 255));
         headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBounds(5, 5, 150, 40);
-        headerPanel.setLayout(null);
-
-        logoLabel.setBounds(8, 5, 32, 32);
-        nameLabel1.setBounds(45, 5, 100, 32);
-        nameLabel2.setBounds(100, 5, 100, 32);
+        headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, new Color(220,220,220,255), new Color(200,200,200,255)));
+        headerPanel.setPreferredSize(new java.awt.Dimension(165, 45));
 
         headerPanel.add(logoLabel);
         headerPanel.add(nameLabel1);
         headerPanel.add(nameLabel2);
-
-        headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-        
     }
 
     public JPanel getLogoHeaderPanel() {
