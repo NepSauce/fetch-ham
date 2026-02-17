@@ -1,11 +1,11 @@
 package ham.swing.panels;
 
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Image;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,7 +22,8 @@ public class LogoPanel{
     private JLabel nameLabel2;
 
     public LogoPanel() {
-        headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        headerPanel = new JPanel();
+        headerPanel.setLayout(new javax.swing.BoxLayout(headerPanel, javax.swing.BoxLayout.X_AXIS));
         logoFile = new File("media/fetch_ham_logo.png");
         logoIcon = new ImageIcon(logoFile.getPath());
         scaledImage = logoIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
@@ -41,8 +42,11 @@ public class LogoPanel{
         headerPanel.setPreferredSize(new java.awt.Dimension(165, 45));
 
         headerPanel.add(logoLabel);
+        headerPanel.add(Box.createHorizontalStrut(5));
         headerPanel.add(nameLabel1);
+        headerPanel.add(Box.createHorizontalStrut(5));
         headerPanel.add(nameLabel2);
+        headerPanel.add(Box.createHorizontalStrut(5));
     }
 
     public JPanel getLogoHeaderPanel() {

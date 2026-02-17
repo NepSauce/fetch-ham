@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.File;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -87,14 +88,14 @@ public class HAMFrame extends JFrame{
 
         // Create a horizontal wrapper panel
         JPanel topWrapper = new JPanel();
-        topWrapper.setLayout(new BorderLayout());
+        topWrapper.setLayout(new BoxLayout(topWrapper, BoxLayout.X_AXIS));
         topWrapper.setBackground(Color.WHITE);
 
         // Add logo to the left
-        topWrapper.add(logoPanel.getLogoHeaderPanel(), BorderLayout.WEST);
+        topWrapper.add(logoPanel.getLogoHeaderPanel());
 
         // Add URLBasePanel to the center/right
-        topWrapper.add(urlBasePanel.getPanel(), BorderLayout.CENTER);
+        topWrapper.add(urlBasePanel.getPanel());
 
         // Add the wrapper to the top of the frame
         add(topWrapper, BorderLayout.PAGE_START);
