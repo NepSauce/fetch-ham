@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,29 +18,35 @@ public class LogoPanel{
     private ImageIcon logoIcon;
     private Image scaledImage;
     private JLabel logoLabel;
-    private JLabel nameLabel;
+    private JLabel nameLabel1;
+    private JLabel nameLabel2;
 
     public LogoPanel() {
         headerPanel = new JPanel();
+        headerPanel.setLayout(new javax.swing.BoxLayout(headerPanel, javax.swing.BoxLayout.X_AXIS));
         logoFile = new File("media/fetch_ham_logo.png");
         logoIcon = new ImageIcon(logoFile.getPath());
         scaledImage = logoIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         logoLabel = new JLabel(new ImageIcon(scaledImage));
-        nameLabel = new JLabel("Fetch Ham");
+        nameLabel1 = new JLabel("Fetch");
+        nameLabel2 = new JLabel("Ham");
 
-        nameLabel.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 18));
+        nameLabel1.setFont(new java.awt.Font("Montserrat", java.awt.Font.BOLD, 20));
+        nameLabel1.setForeground(new Color(39,39,37, 255));
+        nameLabel2.setFont(new java.awt.Font("Montserrat", java.awt.Font.BOLD, 20));
+        nameLabel2.setForeground(new Color(158,54,84, 255));
         headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBounds(5, 5, 150, 40);
-        headerPanel.setLayout(null);
-
-        logoLabel.setBounds(8, 5, 32, 32);
-        nameLabel.setBounds(48, 5, 100, 32);
+        headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, 
+            new Color(220,220,220,255), 
+            new Color(200,200,200,255)));
+        headerPanel.setPreferredSize(new java.awt.Dimension(165, 45));
 
         headerPanel.add(logoLabel);
-        headerPanel.add(nameLabel);
-
-        headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-        
+        headerPanel.add(Box.createHorizontalStrut(5));
+        headerPanel.add(nameLabel1);
+        headerPanel.add(Box.createHorizontalStrut(5));
+        headerPanel.add(nameLabel2);
+        headerPanel.add(Box.createHorizontalStrut(5));
     }
 
     public JPanel getLogoHeaderPanel() {

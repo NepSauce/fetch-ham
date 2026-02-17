@@ -4,10 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.File;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 
 import ham.swing.panels.LogoPanel;
+import ham.swing.panels.URLBasePanel;
 
 public class HAMFrame extends JFrame{
     public HAMFrame() {
@@ -22,9 +28,80 @@ public class HAMFrame extends JFrame{
         setIconImage(new ImageIcon(logoFile.getPath()).getImage());
         getContentPane().setBackground(new Color(238,238,238,255));
 
-        LogoPanel logoPanel = new LogoPanel();
-        add(logoPanel.getLogoHeaderPanel());
+        JMenuBar menuBar = new JMenuBar();
+        // menuBar.add(Box.createRigidArea(new Dimension(165, 0)));
 
-        setLayout(null);
+        // Create menus
+        JMenu hamMenu = new JMenu("HAM");
+        JMenu fileMenu = new JMenu("File");
+        JMenu helpMenu = new JMenu("Help");
+
+        // Add menu items to Ham menu
+        JMenuItem buildInfoItem = new JMenuItem("Build Info");
+        JMenuItem settingsItem = new JMenuItem("Settings");
+        JMenuItem exitItem = new JMenuItem("Exit");
+        hamMenu.add(buildInfoItem);
+        hamMenu.add(settingsItem);
+        hamMenu.addSeparator();
+        hamMenu.add(exitItem);
+
+        // Add menu items to File menu
+        JMenuItem openItem = new JMenuItem("Open");
+        JMenuItem saveItem = new JMenuItem("Save");
+        fileMenu.add(openItem);
+        fileMenu.add(saveItem);
+
+        // Add menu items to Help menu
+        JMenuItem aboutItem = new JMenuItem("About");
+        helpMenu.add(aboutItem);
+
+        JMenu hamBugMenu = new JMenu("HamBug");
+        JMenuItem analysisItem = new JMenuItem("Analysis");
+        JMenuItem healthItem = new JMenuItem("Health");
+        JMenuItem rulesItem = new JMenuItem("Rules");
+        hamBugMenu.add(analysisItem);
+        hamBugMenu.add(healthItem);
+        hamBugMenu.add(rulesItem);
+
+        JMenu windowMenu = new JMenu("Window");
+        JMenuItem openNewWindowItem = new JMenuItem("New");
+        JMenuItem clearWindowItem = new JMenuItem("Clear");
+        JMenuItem refreshWindowItem = new JMenuItem("Refresh");
+        windowMenu.add(openNewWindowItem);
+        windowMenu.add(clearWindowItem);
+        windowMenu.add(refreshWindowItem);
+
+        // Add menus to the menu bar
+        menuBar.add(hamMenu);
+        menuBar.add(fileMenu);
+        menuBar.add(hamBugMenu);
+        menuBar.add(windowMenu);
+        menuBar.add(helpMenu);
+
+        // Set the menu bar for the frame
+        setJMenuBar(menuBar);
+
+        // ...existing code...
+
+        LogoPanel logoPanel = new LogoPanel();
+        URLBasePanel urlBasePanel = new URLBasePanel();
+
+        // Create a horizontal wrapper panel
+        JPanel topWrapper = new JPanel();
+        topWrapper.setLayout(new BoxLayout(topWrapper, BoxLayout.X_AXIS));
+        topWrapper.setBackground(Color.WHITE);
+
+        // Add logo to the left
+        topWrapper.add(logoPanel.getLogoHeaderPanel());
+
+        // Add URLBasePanel to the center/right
+        topWrapper.add(urlBasePanel.getPanel());
+
+        // Add the wrapper to the top of the frame
+        add(topWrapper, BorderLayout.PAGE_START);
+
+        // ...rest of your code...
+
+        
     }
 }
