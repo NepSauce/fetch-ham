@@ -8,6 +8,7 @@ import javax.swing.SwingUtilities;
 import ham.swing.frames.HAMFrame;;
 
 public class MainFrame {
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             HAMFrame hamFrame = new HAMFrame();
