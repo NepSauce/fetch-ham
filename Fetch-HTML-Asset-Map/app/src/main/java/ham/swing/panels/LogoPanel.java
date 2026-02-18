@@ -37,7 +37,6 @@ public class LogoPanel{
         nameLabel2.setForeground(new Color(158,54,84, 255));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-        headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         headerPanel.setPreferredSize(new java.awt.Dimension(165, 45));
 
         headerPanel.add(logoLabel);

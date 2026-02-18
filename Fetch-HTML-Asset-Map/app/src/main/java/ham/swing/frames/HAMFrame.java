@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -11,6 +12,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 
 import ham.swing.panels.LogoPanel;
 import ham.swing.panels.URLBasePanel;
@@ -20,8 +22,8 @@ public class HAMFrame extends JFrame{
         File logoFile = new File("app/src/main/resources/media/fetch_ham_logo.png");
 
         setTitle("Fetch Ham - HTML Asset Map");
+        setSize(1024, 768);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
         setLocationRelativeTo(null); 
         setLayout(new BorderLayout());
         setVisible(true);
@@ -90,6 +92,7 @@ public class HAMFrame extends JFrame{
         JPanel topWrapper = new JPanel();
         topWrapper.setLayout(new BoxLayout(topWrapper, BoxLayout.X_AXIS));
         topWrapper.setBackground(Color.WHITE);
+        topWrapper.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
         // Add logo to the left
         topWrapper.add(logoPanel.getLogoHeaderPanel());
