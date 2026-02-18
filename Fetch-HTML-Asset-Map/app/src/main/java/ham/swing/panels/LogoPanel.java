@@ -24,7 +24,7 @@ public class LogoPanel{
     public LogoPanel() {
         headerPanel = new JPanel();
         headerPanel.setLayout(new javax.swing.BoxLayout(headerPanel, javax.swing.BoxLayout.X_AXIS));
-        logoFile = new File("media/fetch_ham_logo.png");
+        logoFile = new File("app/src/main/resources/media/fetch_ham_logo.png");
         logoIcon = new ImageIcon(logoFile.getPath());
         scaledImage = logoIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         logoLabel = new JLabel(new ImageIcon(scaledImage));
