@@ -36,9 +36,8 @@ public class LogoPanel{
         nameLabel2.setFont(new java.awt.Font("Montserrat", java.awt.Font.BOLD, 20));
         nameLabel2.setForeground(new Color(158,54,84, 255));
         headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, 
-            new Color(220,220,220,255), 
-            new Color(200,200,200,255)));
+        headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+        headerPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         headerPanel.setPreferredSize(new java.awt.Dimension(165, 45));
 
         headerPanel.add(logoLabel);
