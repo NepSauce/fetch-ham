@@ -6,6 +6,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import ham.swing.panels.URLPanels.URLComboBox;
+import ham.swing.panels.URLPanels.URLPanel;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class URLBasePanel {
@@ -18,6 +19,9 @@ public class URLBasePanel {
 
         URLComboBox urlComboBox = new URLComboBox();
         mainPanel.add(urlComboBox.getModeComboBox());
+
+        URLPanel urlPanel = new URLPanel();
+        mainPanel.add(urlPanel.getURLPanel());
     }
 
     public JPanel getPanel() {

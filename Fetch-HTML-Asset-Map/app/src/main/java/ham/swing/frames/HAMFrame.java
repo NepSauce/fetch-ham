@@ -17,7 +17,7 @@ import ham.swing.panels.URLBasePanel;
 
 public class HAMFrame extends JFrame{
     public HAMFrame() {
-        File logoFile = new File("media/fetch_ham_logo.png");
+        File logoFile = new File("app/src/main/resources/media/fetch_ham_logo.png");
 
         setTitle("Fetch Ham - HTML Asset Map");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
