@@ -3,7 +3,6 @@ package ham.swing.panels.URLPanels;
 import java.awt.Color;
 import java.awt.Font;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 
 @SuppressWarnings("FieldMayBeFinal")
@@ -15,9 +14,9 @@ public class URLComboBox {
 
         modeComboBox = new JComboBox<>(depthFlag);
         modeComboBox.setSelectedIndex(0);
-        modeComboBox.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0)); 
         modeComboBox.setPreferredSize(new java.awt.Dimension(100, 35));
         modeComboBox.setBackground(Color.WHITE);
+        modeComboBox.setForeground(new Color(39,39,37, 255));
         modeComboBox.setMaximumSize(new java.awt.Dimension(100, 35));
         modeComboBox.setMinimumSize(new java.awt.Dimension(100, 35));
         
