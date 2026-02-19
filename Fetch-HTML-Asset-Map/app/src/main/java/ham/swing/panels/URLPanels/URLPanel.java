@@ -13,7 +13,7 @@ public class URLPanel {
         urlTextArea = new JTextField();
         urlTextArea.setPreferredSize(new java.awt.Dimension(350, 35));
         urlTextArea.setMaximumSize(new java.awt.Dimension(350, 35));
-        urlTextArea.setMinimumSize(new java.awt.Dimension(350, 35));
+        urlTextArea.setMinimumSize(new java.awt.Dimension(300, 35));
         urlTextArea.setBackground(new Color(238,238,238,255));
         urlTextArea.setForeground(new Color(39,39,37, 255));
         urlTextArea.setSize(new java.awt.Dimension(350, 35));

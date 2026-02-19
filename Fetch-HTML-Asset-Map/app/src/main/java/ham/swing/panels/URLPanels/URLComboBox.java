@@ -20,7 +20,7 @@ public class URLComboBox {
         modeComboBox.setMaximumSize(new java.awt.Dimension(100, 35));
         modeComboBox.setMinimumSize(new java.awt.Dimension(100, 35));
         
-        Font fontA = new Font("Arial", Font.ROMAN_BASELINE, 16);
+        Font fontA = new Font("Arial", Font.PLAIN, 16);
         modeComboBox.setFont(fontA);
     }
 

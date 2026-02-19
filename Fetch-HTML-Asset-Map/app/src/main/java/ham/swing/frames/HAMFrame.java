@@ -102,9 +102,5 @@ public class HAMFrame extends JFrame{
 
         // Add the wrapper to the top of the frame
         add(topWrapper, BorderLayout.PAGE_START);
-
-        // ...rest of your code...
-
-        
     }
 }
