@@ -1,25 +1,27 @@
 package ham.swing.panels;
 
-import javax.swing.BorderFactory;
+import java.awt.Color;
+
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import ham.swing.panels.URLPanels.URLControlPanel;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class URLButtonPanel {
-    private JPanel buttonPanel;
+    private JPanel mainControlPanel;
 
     public URLButtonPanel() {
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainControlPanel = new JPanel();
+        mainControlPanel.setLayout(new BoxLayout(mainControlPanel, BoxLayout.X_AXIS));
+        mainControlPanel.setBackground(Color.WHITE); 
+        
+        URLControlPanel controlPanel = new URLControlPanel();
+        mainControlPanel.add(controlPanel.getControlPanel());
 
-        JButton robotButton = new JButton("Fetch Robots.txt");
-
-        buttonPanel.add(robotButton);
     }
 
-    public JPanel getButtonPanel() {
-        return buttonPanel;
+    public JPanel getMainControlPanel() {
+        return mainControlPanel;
     }
 }

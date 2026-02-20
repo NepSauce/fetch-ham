@@ -16,6 +16,7 @@ import javax.swing.border.BevelBorder;
 
 import ham.swing.panels.LogoPanel;
 import ham.swing.panels.URLBasePanel;
+import ham.swing.panels.URLPanels.URLControlPanel;
 
 public class HAMFrame extends JFrame{
     public HAMFrame() {
@@ -102,5 +103,8 @@ public class HAMFrame extends JFrame{
 
         // Add the wrapper to the top of the frame
         add(topWrapper, BorderLayout.PAGE_START);
+
+        URLControlPanel urlControlPanel = new URLControlPanel();
+        add(urlControlPanel.getControlPanel(), BorderLayout.CENTER);
     }
 }
