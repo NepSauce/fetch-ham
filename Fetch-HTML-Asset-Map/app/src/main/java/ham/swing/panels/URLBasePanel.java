@@ -25,6 +25,9 @@ public class URLBasePanel {
 
         URLPanel urlPanel = new URLPanel();
         mainPanel.add(urlPanel.getURLPanel());
+
+        URLButtonPanel urlButtonPanel = new URLButtonPanel();
+        mainPanel.add(urlButtonPanel.getButtonPanel());
     }
 
     public JPanel getPanel() {
