@@ -56,7 +56,6 @@ public class URLRobotPanel {
         switchPanel.add(rulesSwitch);
 
         controlPanel.add(buttonPanel);
-        controlPanel.add(Box.createHorizontalStrut(0));
         controlPanel.add(switchPanel);
     }
 
