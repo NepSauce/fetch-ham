@@ -5,7 +5,7 @@ import java.awt.Color;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import ham.swing.panels.URLPanels.URLControlPanel;
+import ham.swing.panels.URLPanels.URLRobotPanel;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class URLButtonPanel {
@@ -16,7 +16,7 @@ public class URLButtonPanel {
         mainControlPanel.setLayout(new BoxLayout(mainControlPanel, BoxLayout.X_AXIS));
         mainControlPanel.setBackground(Color.WHITE); 
         
-        URLControlPanel controlPanel = new URLControlPanel();
+        URLRobotPanel controlPanel = new URLRobotPanel();
         mainControlPanel.add(controlPanel.getControlPanel());
 
     }
