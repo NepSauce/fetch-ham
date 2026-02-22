@@ -3,7 +3,6 @@ package ham.swing.panels.URLPanels;
 import java.awt.Component;
 import java.awt.Dimension;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -12,6 +11,10 @@ import javax.swing.JToggleButton;
 @SuppressWarnings("FieldMayBeFinal")
 public class URLRobotPanel {
     private JPanel controlPanel;
+    private JButton robotButton;
+    private JButton viewRulesButton;
+    private JToggleButton robotSwitch;
+    private JToggleButton rulesSwitch;
 
     public URLRobotPanel() {
         controlPanel = new JPanel();
@@ -25,14 +28,10 @@ public class URLRobotPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        JButton robotButton = new JButton("robots.txt");
-        robotButton.setPreferredSize(new Dimension(100, 17));
-        robotButton.setMaximumSize(new Dimension(100, 17));
-        robotButton.setMinimumSize(new Dimension(100, 17));
-        JButton viewRulesButton = new JButton("View rules");
-        viewRulesButton.setPreferredSize(new Dimension(100, 17));
-        viewRulesButton.setMaximumSize(new Dimension(100, 17));
-        viewRulesButton.setMinimumSize(new Dimension(100, 17));
+        robotButton = new JButton("robots.txt");
+        setComponentSize(robotButton, new Dimension(100, 17));
+        viewRulesButton = new JButton("View rules");
+        setComponentSize(viewRulesButton, new Dimension(100, 17));
         viewRulesButton.setEnabled(false);
 
         buttonPanel.add(robotButton);
@@ -42,15 +41,11 @@ public class URLRobotPanel {
         switchPanel.setLayout(new BoxLayout(switchPanel, BoxLayout.Y_AXIS));
         switchPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        JToggleButton robotSwitch = new JToggleButton("On");
-        robotSwitch.setPreferredSize(new Dimension(50, 17));
-        robotSwitch.setMaximumSize(new Dimension(50, 17));
-        robotSwitch.setMinimumSize(new Dimension(50, 17));
+        robotSwitch = new JToggleButton("On");
+        setComponentSize(robotSwitch, new Dimension(50, 17));
 
-        JToggleButton rulesSwitch = new JToggleButton("On");
-        rulesSwitch.setPreferredSize(new Dimension(50, 17));
-        rulesSwitch.setMaximumSize(new Dimension(50, 17));
-        rulesSwitch.setMinimumSize(new Dimension(50, 17));
+        rulesSwitch = new JToggleButton("On");
+        setComponentSize(rulesSwitch, new Dimension(50, 17));
 
         switchPanel.add(robotSwitch);
         switchPanel.add(rulesSwitch);
@@ -59,7 +54,29 @@ public class URLRobotPanel {
         controlPanel.add(switchPanel);
     }
 
-    public JPanel getURLRobotPanel() {
+    private void setComponentSize(Component component, Dimension size) {
+        component.setPreferredSize(size);
+        component.setMaximumSize(size);
+        component.setMinimumSize(size);
+    }
+
+    public JPanel getControlPanel() {
         return controlPanel;
+    }
+
+    public JButton getRobotButton() {
+        return robotButton;
+    }
+
+    public JButton getViewRulesButton() {
+        return viewRulesButton;
+    }
+
+    public JToggleButton getRobotSwitch() {
+        return robotSwitch;
+    }
+
+    public JToggleButton getRulesSwitch() {
+        return rulesSwitch;
     }
 }
