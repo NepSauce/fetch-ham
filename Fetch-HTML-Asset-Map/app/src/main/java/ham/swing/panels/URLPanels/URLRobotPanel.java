@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class URLRobotPanel {
     private JPanel controlPanel;
 
