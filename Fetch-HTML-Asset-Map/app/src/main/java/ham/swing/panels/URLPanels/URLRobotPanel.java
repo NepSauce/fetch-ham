@@ -19,9 +19,7 @@ public class URLRobotPanel {
     public URLRobotPanel() {
         controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
-        controlPanel.setPreferredSize(new Dimension(125, 35));
-        controlPanel.setMaximumSize(new Dimension(125, 35));
-        controlPanel.setMinimumSize(new Dimension(125, 35));
+        setComponentSize(controlPanel, new Dimension(125, 35));
         controlPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         JPanel buttonPanel = new JPanel();
