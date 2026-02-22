@@ -7,8 +7,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class URLMapButton {
-    JPanel mapButtonPanel;
+    private JPanel mapButtonPanel;
+    private JButton mapButton;
 
     public URLMapButton() {
         mapButtonPanel = new JPanel();
@@ -19,18 +21,21 @@ public class URLMapButton {
         mapButtonPanel.setMaximumSize(new java.awt.Dimension(100, 35));
         mapButtonPanel.setMinimumSize(new java.awt.Dimension(100, 35));
         mapButtonPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-        
-        JButton mapButton = new JButton("Map");
+
+        mapButton = new JButton("Map");
         mapButton.setPreferredSize(new java.awt.Dimension(100, 35));
         mapButton.setMaximumSize(new java.awt.Dimension(100, 35));
-        mapButton.setMinimumSize(new java.awt.Dimension(100, 35));  
+        mapButton.setMinimumSize(new java.awt.Dimension(100, 35));
         mapButton.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        mapButtonPanel.add(mapButton);  
+        mapButtonPanel.add(mapButton);
     }
 
     public JPanel getURLMapButtonPanel() {
         return mapButtonPanel;
     }
-    
+
+    public JButton getMapButton() {
+        return mapButton;
+    }
 }
