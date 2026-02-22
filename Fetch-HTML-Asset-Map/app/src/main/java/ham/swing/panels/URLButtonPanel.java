@@ -23,7 +23,7 @@ public class URLButtonPanel {
         mainControlPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
         
         URLRobotPanel controlPanel = new URLRobotPanel();
-        mainControlPanel.add(controlPanel.getControlPanel());
+        mainControlPanel.add(controlPanel.getURLRobotPanel());
 
     }
 

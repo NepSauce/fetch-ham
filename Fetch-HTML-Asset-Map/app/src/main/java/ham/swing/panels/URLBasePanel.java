@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import ham.swing.panels.URLPanels.URLComboBox;
+import ham.swing.panels.URLPanels.URLMapButton;
 import ham.swing.panels.URLPanels.URLPanel;
 
 @SuppressWarnings("FieldMayBeFinal")
@@ -28,6 +29,10 @@ public class URLBasePanel {
         URLPanel urlPanel = new URLPanel();
         urlPanel.getURLPanel().setAlignmentY(Component.CENTER_ALIGNMENT);
         mainPanel.add(urlPanel.getURLPanel());
+
+        URLMapButton urlMapButton = new URLMapButton();
+        urlMapButton.getURLMapButtonPanel().setAlignmentY(Component.CENTER_ALIGNMENT);
+        mainPanel.add(urlMapButton.getURLMapButtonPanel());
 
         URLButtonPanel urlButtonPanel = new URLButtonPanel();
         urlButtonPanel.getMainControlPanel().setAlignmentY(Component.CENTER_ALIGNMENT);

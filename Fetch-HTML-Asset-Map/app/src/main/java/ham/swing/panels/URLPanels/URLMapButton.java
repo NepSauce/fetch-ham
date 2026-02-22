@@ -20,7 +20,12 @@ public class URLMapButton {
         mapButton.setPreferredSize(new java.awt.Dimension(100, 17));
         mapButton.setMaximumSize(new java.awt.Dimension(100, 17));
         mapButton.setMinimumSize(new java.awt.Dimension(100, 17));  
+
         mapButtonPanel.add(mapButton);  
+    }
+
+    public JPanel getURLMapButtonPanel() {
+        return mapButtonPanel;
     }
     
 }

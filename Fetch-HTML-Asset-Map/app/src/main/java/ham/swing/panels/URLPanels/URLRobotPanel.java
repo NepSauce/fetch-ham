@@ -59,7 +59,7 @@ public class URLRobotPanel {
         controlPanel.add(switchPanel);
     }
 
-    public JPanel getControlPanel() {
+    public JPanel getURLRobotPanel() {
         return controlPanel;
     }
 }
