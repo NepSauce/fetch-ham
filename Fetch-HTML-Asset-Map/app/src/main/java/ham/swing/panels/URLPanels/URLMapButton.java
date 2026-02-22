@@ -26,7 +26,6 @@ public class URLMapButton {
         mapButton.setMinimumSize(new java.awt.Dimension(100, 35));  
         mapButton.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-
         mapButtonPanel.add(mapButton);  
     }
 
