@@ -1,6 +1,7 @@
 package ham.swing.panels;
 
 import java.awt.Color;
+import java.awt.Component;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -21,12 +22,15 @@ public class URLBasePanel {
         mainPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
         URLComboBox urlComboBox = new URLComboBox();
+        urlComboBox.getModeComboBox().setAlignmentY(Component.CENTER_ALIGNMENT);
         mainPanel.add(urlComboBox.getModeComboBox());
 
         URLPanel urlPanel = new URLPanel();
+        urlPanel.getURLPanel().setAlignmentY(Component.CENTER_ALIGNMENT);
         mainPanel.add(urlPanel.getURLPanel());
 
         URLButtonPanel urlButtonPanel = new URLButtonPanel();
+        urlButtonPanel.getMainControlPanel().setAlignmentY(Component.CENTER_ALIGNMENT);
         mainPanel.add(urlButtonPanel.getMainControlPanel());
     }
 
