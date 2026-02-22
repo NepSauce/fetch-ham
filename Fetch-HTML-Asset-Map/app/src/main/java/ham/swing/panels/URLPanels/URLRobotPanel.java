@@ -25,13 +25,14 @@ public class URLRobotPanel {
         buttonPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         JButton robotButton = new JButton("robots.txt");
-        robotButton.setPreferredSize(new Dimension(75, 17));
-        robotButton.setMaximumSize(new Dimension(75, 17));
-        robotButton.setMinimumSize(new Dimension(75, 17));
+        robotButton.setPreferredSize(new Dimension(100, 17));
+        robotButton.setMaximumSize(new Dimension(100, 17));
+        robotButton.setMinimumSize(new Dimension(100, 17));
         JButton viewRulesButton = new JButton("View rules");
-        viewRulesButton.setPreferredSize(new Dimension(75, 17));
-        viewRulesButton.setMaximumSize(new Dimension(75, 17));
-        viewRulesButton.setMinimumSize(new Dimension(75, 17));
+        viewRulesButton.setPreferredSize(new Dimension(100, 17));
+        viewRulesButton.setMaximumSize(new Dimension(100, 17));
+        viewRulesButton.setMinimumSize(new Dimension(100, 17));
+        viewRulesButton.setEnabled(false);
 
         buttonPanel.add(robotButton);
         buttonPanel.add(viewRulesButton);
