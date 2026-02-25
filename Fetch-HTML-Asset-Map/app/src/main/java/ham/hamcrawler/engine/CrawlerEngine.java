@@ -20,19 +20,21 @@ import ham.hamcrawler.model.CrawlOptions;
 import ham.hamcrawler.model.CrawlStatus;
 
 public class CrawlerEngine {
-    private static final long IDLE_BACKOFF_MS = 50;
+    private static final long IDLE_BACKOFF_MS = 25;
 
     private final FetchService fetchService;
     private final LinkExtractor linkExtractor;
 
     private final ConcurrentLinkedQueue<String> queue;
     private final Set<String> visited;
+    private final Set<String> scheduled;
 
     private ExecutorService executor;
     private AtomicBoolean running;
     private AtomicBoolean stopRequested;
     private AtomicInteger activeWorkers;
     private AtomicInteger discoveredCount;
+    private AtomicInteger pendingUrls;
     private AtomicReference<String> lastUrl;
 
     public CrawlerEngine() {
@@ -40,10 +42,12 @@ public class CrawlerEngine {
         this.linkExtractor = new LinkExtractor();
         this.queue = new ConcurrentLinkedQueue<>();
         this.visited = ConcurrentHashMap.newKeySet();
+        this.scheduled = ConcurrentHashMap.newKeySet();
         this.running = new AtomicBoolean(false);
         this.stopRequested = new AtomicBoolean(false);
         this.activeWorkers = new AtomicInteger(0);
         this.discoveredCount = new AtomicInteger(0);
+        this.pendingUrls = new AtomicInteger(0);
         this.lastUrl = new AtomicReference<>(null);
     }
 
@@ -71,7 +75,9 @@ public class CrawlerEngine {
 
         int threadCount = Math.max(1, options.threadCount());
         queue.offer(options.startUrl());
+        scheduled.add(options.startUrl());
         discoveredCount.incrementAndGet();
+        pendingUrls.set(1);
         HamBugLogger.log("[HAM] Crawl started | url=" + options.startUrl() + " | mode=" + options.mode() + " | threads=" + threadCount);
 
         callbacks.onStarted(options);
@@ -115,7 +121,7 @@ public class CrawlerEngine {
         while (running.get()) {
             String nextUrl = queue.poll();
             if (nextUrl == null) {
-                if (activeWorkers.get() == 0 && queue.isEmpty()) {
+                if (pendingUrls.get() == 0) {
                     running.set(false);
                     break;
                 }
@@ -125,6 +131,7 @@ public class CrawlerEngine {
             }
 
             if (!visited.add(nextUrl)) {
+                pendingUrls.decrementAndGet();
                 continue;
             }
 
@@ -153,8 +160,9 @@ public class CrawlerEngine {
                         continue;
                     }
 
-                    if (!visited.contains(discoveredUrl)) {
+                    if (scheduled.add(discoveredUrl)) {
                         queue.offer(discoveredUrl);
+                        pendingUrls.incrementAndGet();
                         discoveredCount.incrementAndGet();
                         HamBugLogger.log("[" + workerName + "] found=" + discoveredUrl + " | from=" + nextUrl);
                     }
@@ -164,6 +172,7 @@ public class CrawlerEngine {
                 callbacks.onError("Error crawling: " + nextUrl, exception);
             } finally {
                 activeWorkers.decrementAndGet();
+                pendingUrls.decrementAndGet();
                 callbacks.onProgress(snapshot(nextUrl));
             }
         }
@@ -212,8 +221,10 @@ public class CrawlerEngine {
     private void clearState() {
         queue.clear();
         visited.clear();
+        scheduled.clear();
         discoveredCount.set(0);
         activeWorkers.set(0);
+        pendingUrls.set(0);
         lastUrl.set(null);
     }
 
