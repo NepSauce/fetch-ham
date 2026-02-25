@@ -14,6 +14,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import ham.hamcrawler.HAMEntry;
+import ham.swing.controller.CrawlUIController;
 import ham.swing.panels.LogoPanel;
 import ham.swing.panels.URLBasePanel;
 
@@ -87,6 +89,17 @@ public class HAMFrame extends JFrame{
 
         LogoPanel logoPanel = new LogoPanel();
         URLBasePanel urlBasePanel = new URLBasePanel();
+
+        HAMEntry hamEntry = new HAMEntry();
+        new CrawlUIController(
+            hamEntry,
+            urlBasePanel.getUrlField(),
+            urlBasePanel.getModeComboBox(),
+            urlBasePanel.getUrlSwitchPanel(),
+            urlBasePanel.getUrlButtonPanel().getUrlMapButton().getMapButton(),
+            urlBasePanel.getUrlButtonPanel().getUrlStopButton().getStopButton(),
+            urlBasePanel.getUrlButtonPanel().getMainControlPanel()
+        );
 
         // Create a horizontal wrapper panel
         JPanel topWrapper = new JPanel();
