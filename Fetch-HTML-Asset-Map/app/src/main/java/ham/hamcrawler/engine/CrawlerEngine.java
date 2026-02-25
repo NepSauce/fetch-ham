@@ -155,6 +155,10 @@ public class CrawlerEngine {
             lastUrl.set(nextUrl);
             callbacks.onProgress(snapshot(nextUrl));
             try {
+                if (!options.extractNonHtml() && looksLikeNonHtmlAsset(nextUrl)) {
+                    continue;
+                }
+
                 if (!isAllowedByRobots(nextUrl, options)) {
                     HamBugLogger.log("[" + workerName + "] skipped-robots=" + nextUrl);
                     continue;
@@ -162,7 +166,6 @@ public class CrawlerEngine {
 
                 Document document = fetchService.fetch(nextUrl);
                 if (document == null) {
-                    HamBugLogger.log("[" + workerName + "] visited=" + nextUrl + " | title=<non-html>");
                     continue;
                 }
 
@@ -190,7 +193,6 @@ public class CrawlerEngine {
                     }
 
                     if (!shouldQueueDiscoveredUrl(canonicalDiscoveredUrl, options)) {
-                        HamBugLogger.log("[" + workerName + "] skipped-non-html=" + canonicalDiscoveredUrl + " | from=" + nextUrl);
                         continue;
                     }
 
