@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import ham.hamcrawler.model.CrawlCallbacks;
 import ham.hamcrawler.model.CrawlMode;
@@ -153,6 +154,10 @@ public class CrawlerEngine {
                 }
                 HamBugLogger.log("[" + workerName + "] visited=" + nextUrl + " | title=" + pageTitle);
 
+                if (options.extractMetadata()) {
+                    HamBugLogger.log("[" + workerName + "] metadata=" + extractMetadataSummary(document) + " | page=" + nextUrl);
+                }
+
                 Set<String> discoveredUrls = linkExtractor.extractLinks(document, nextUrl);
                 HamBugLogger.log("[" + workerName + "] discovered=" + discoveredUrls.size() + " links/assets | page=" + nextUrl);
 
@@ -247,6 +252,61 @@ public class CrawlerEngine {
             HamBugLogger.log("[HAM] Crawl completed | visited=" + finalStatus.visitedCount() + " | discovered=" + finalStatus.discoveredCount() + " | queued=" + finalStatus.queuedCount());
             callbacks.onCompleted(finalStatus);
         }
+    }
+
+    private String extractMetadataSummary(Document document) {
+        String description = getMeta(document, "description");
+        String keywords = getMeta(document, "keywords");
+        String ogTitle = getMeta(document, "og:title");
+        String ogDescription = getMeta(document, "og:description");
+        String canonical = getCanonical(document);
+        String lang = document.select("html").attr("lang");
+
+        return "description=" + safeMetadataValue(description)
+                + " | keywords=" + safeMetadataValue(keywords)
+                + " | og:title=" + safeMetadataValue(ogTitle)
+                + " | og:description=" + safeMetadataValue(ogDescription)
+                + " | canonical=" + safeMetadataValue(canonical)
+                + " | lang=" + safeMetadataValue(lang);
+    }
+
+    private String getMeta(Document document, String key) {
+        Element byName = document.selectFirst("meta[name='" + key + "']");
+        if (byName != null) {
+            return byName.attr("content");
+        }
+
+        Element byProperty = document.selectFirst("meta[property='" + key + "']");
+        if (byProperty != null) {
+            return byProperty.attr("content");
+        }
+
+        return null;
+    }
+
+    private String getCanonical(Document document) {
+        Element canonical = document.selectFirst("link[rel='canonical']");
+        if (canonical == null) {
+            return null;
+        }
+
+        String href = canonical.absUrl("href");
+        if (href == null || href.isBlank()) {
+            href = canonical.attr("href");
+        }
+        return href;
+    }
+
+    private String safeMetadataValue(String value) {
+        if (value == null || value.isBlank()) {
+            return "<none>";
+        }
+
+        String normalized = value.replaceAll("\\s+", " ").trim();
+        if (normalized.length() > 120) {
+            return normalized.substring(0, 120) + "...";
+        }
+        return normalized;
     }
 
     private CrawlStatus snapshot(String currentUrl) {
