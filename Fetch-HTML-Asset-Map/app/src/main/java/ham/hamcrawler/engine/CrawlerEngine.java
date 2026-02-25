@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -71,11 +72,19 @@ public class CrawlerEngine {
         int threadCount = Math.max(1, options.threadCount());
         queue.offer(options.startUrl());
         discoveredCount.incrementAndGet();
-        HamBugLogger.log("Crawl started | url=" + options.startUrl() + " | mode=" + options.mode() + " | threads=" + threadCount);
+        HamBugLogger.log("[HAM] Crawl started | url=" + options.startUrl() + " | mode=" + options.mode() + " | threads=" + threadCount);
 
         callbacks.onStarted(options);
 
-        executor = Executors.newFixedThreadPool(threadCount);
+        AtomicInteger threadIndex = new AtomicInteger(1);
+        ThreadFactory workerFactory = runnable -> {
+            Thread thread = new Thread(runnable);
+            thread.setName("HamBug-" + threadIndex.getAndIncrement());
+            thread.setDaemon(true);
+            return thread;
+        };
+
+        executor = Executors.newFixedThreadPool(threadCount, workerFactory);
         for (int i = 0; i < threadCount; i++) {
             executor.submit(() -> workerLoop(options, callbacks));
         }
@@ -85,13 +94,13 @@ public class CrawlerEngine {
                 executor.shutdown();
                 boolean terminated = executor.awaitTermination(7, TimeUnit.DAYS);
                 if (!terminated) {
-                    HamBugLogger.log("Crawl termination timeout while waiting for workers.");
+                    HamBugLogger.log("[HAM] Crawl termination timeout while waiting for workers.");
                     callbacks.onError("Crawler termination timeout.", null);
                 }
                 finalizeRun(callbacks);
             } catch (InterruptedException exception) {
                 Thread.currentThread().interrupt();
-                HamBugLogger.log("Crawl interrupted while waiting for completion.");
+                HamBugLogger.log("[HAM] Crawl interrupted while waiting for completion.");
                 callbacks.onError("Crawler interrupted while waiting for completion.", exception);
                 finalizeRun(callbacks);
             }
@@ -119,13 +128,14 @@ public class CrawlerEngine {
                 continue;
             }
 
+            String workerName = Thread.currentThread().getName();
             activeWorkers.incrementAndGet();
             lastUrl.set(nextUrl);
             callbacks.onProgress(snapshot(nextUrl));
             try {
                 Document document = fetchService.fetch(nextUrl);
                 if (document == null) {
-                    HamBugLogger.log("Thread-" + Thread.currentThread().threadId() + " visited=" + nextUrl + " | title=<non-html>");
+                    HamBugLogger.log("[" + workerName + "] visited=" + nextUrl + " | title=<non-html>");
                     continue;
                 }
 
@@ -133,10 +143,10 @@ public class CrawlerEngine {
                 if (pageTitle == null || pageTitle.isBlank()) {
                     pageTitle = "(untitled page)";
                 }
-                HamBugLogger.log("Thread-" + Thread.currentThread().threadId() + " visited=" + nextUrl + " | title=" + pageTitle);
+                HamBugLogger.log("[" + workerName + "] visited=" + nextUrl + " | title=" + pageTitle);
 
                 Set<String> discoveredUrls = linkExtractor.extractLinks(document, nextUrl);
-                HamBugLogger.log("Thread-" + Thread.currentThread().threadId() + " discovered=" + discoveredUrls.size() + " links/assets | page=" + nextUrl);
+                HamBugLogger.log("[" + workerName + "] discovered=" + discoveredUrls.size() + " links/assets | page=" + nextUrl);
 
                 for (String discoveredUrl : discoveredUrls) {
                     if (!isAllowedByMode(startUri, discoveredUrl, options.mode())) {
@@ -146,11 +156,11 @@ public class CrawlerEngine {
                     if (!visited.contains(discoveredUrl)) {
                         queue.offer(discoveredUrl);
                         discoveredCount.incrementAndGet();
-                        HamBugLogger.log("Thread-" + Thread.currentThread().threadId() + " found=" + discoveredUrl + " | from=" + nextUrl);
+                        HamBugLogger.log("[" + workerName + "] found=" + discoveredUrl + " | from=" + nextUrl);
                     }
                 }
             } catch (Exception exception) {
-                HamBugLogger.log("Thread-" + Thread.currentThread().threadId() + " error=" + nextUrl + " | message=" + exception.getMessage());
+                HamBugLogger.log("[" + workerName + "] error=" + nextUrl + " | message=" + exception.getMessage());
                 callbacks.onError("Error crawling: " + nextUrl, exception);
             } finally {
                 activeWorkers.decrementAndGet();
@@ -181,10 +191,10 @@ public class CrawlerEngine {
         clearExecutionRefs();
 
         if (stoppedByUser) {
-            HamBugLogger.log("Crawl stopped | visited=" + finalStatus.visitedCount() + " | discovered=" + finalStatus.discoveredCount() + " | queued=" + finalStatus.queuedCount());
+            HamBugLogger.log("[HAM] Crawl stopped | visited=" + finalStatus.visitedCount() + " | discovered=" + finalStatus.discoveredCount() + " | queued=" + finalStatus.queuedCount());
             callbacks.onStopped(finalStatus);
         } else {
-            HamBugLogger.log("Crawl completed | visited=" + finalStatus.visitedCount() + " | discovered=" + finalStatus.discoveredCount() + " | queued=" + finalStatus.queuedCount());
+            HamBugLogger.log("[HAM] Crawl completed | visited=" + finalStatus.visitedCount() + " | discovered=" + finalStatus.discoveredCount() + " | queued=" + finalStatus.queuedCount());
             callbacks.onCompleted(finalStatus);
         }
     }
