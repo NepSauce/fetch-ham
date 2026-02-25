@@ -14,7 +14,7 @@ import ham.hamcrawler.model.CrawlStatus;
 import ham.swing.panels.URLPanels.URLSwitchPanel;
 
 public class CrawlUIController {
-    private static final int HARDCODED_THREAD_COUNT = 4;
+    private static final int HARDCODED_THREAD_COUNT = 8;
 
     private final HAMEntry hamEntry;
     private final JTextField urlField;
