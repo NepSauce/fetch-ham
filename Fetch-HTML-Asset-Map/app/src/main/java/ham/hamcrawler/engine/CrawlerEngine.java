@@ -189,6 +189,9 @@ public class CrawlerEngine {
                     }
 
                     if (!isAllowedByMode(startUri, canonicalDiscoveredUrl, options.mode())) {
+                        if (options.mode() == CrawlMode.CONTAINED) {
+                            HamBugLogger.log("[" + workerName + "] skipped-contained=" + canonicalDiscoveredUrl + " | from=" + nextUrl);
+                        }
                         continue;
                     }
 
@@ -224,9 +227,27 @@ public class CrawlerEngine {
             return false;
         }
 
-        String startHost = startUri.getHost();
-        String candidateHost = candidateUri.getHost();
-        return startHost != null && startHost.equalsIgnoreCase(candidateHost);
+        String startHost = normalizedHost(startUri.getHost());
+        String candidateHost = normalizedHost(candidateUri.getHost());
+        if (startHost == null || candidateHost == null) {
+            return false;
+        }
+
+        return startHost.equals(candidateHost)
+                || candidateHost.endsWith("." + startHost)
+                || startHost.endsWith("." + candidateHost);
+    }
+
+    private String normalizedHost(String host) {
+        if (host == null || host.isBlank()) {
+            return null;
+        }
+
+        String normalized = host.toLowerCase(Locale.ROOT);
+        if (normalized.startsWith("www.")) {
+            normalized = normalized.substring(4);
+        }
+        return normalized;
     }
 
     private boolean shouldQueueDiscoveredUrl(String discoveredUrl, CrawlOptions options) {
