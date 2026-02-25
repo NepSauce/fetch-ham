@@ -1,6 +1,7 @@
 package ham.hamcrawler.engine;
 
 import java.net.URI;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -160,6 +161,11 @@ public class CrawlerEngine {
                         continue;
                     }
 
+                    if (!shouldQueueDiscoveredUrl(discoveredUrl, options)) {
+                        HamBugLogger.log("[" + workerName + "] skipped-non-html=" + discoveredUrl + " | from=" + nextUrl);
+                        continue;
+                    }
+
                     if (scheduled.add(discoveredUrl)) {
                         queue.offer(discoveredUrl);
                         pendingUrls.incrementAndGet();
@@ -191,6 +197,41 @@ public class CrawlerEngine {
         String startHost = startUri.getHost();
         String candidateHost = candidateUri.getHost();
         return startHost != null && startHost.equalsIgnoreCase(candidateHost);
+    }
+
+    private boolean shouldQueueDiscoveredUrl(String discoveredUrl, CrawlOptions options) {
+        if (options.extractNonHtml()) {
+            return true;
+        }
+
+        return !looksLikeNonHtmlAsset(discoveredUrl);
+    }
+
+    private boolean looksLikeNonHtmlAsset(String discoveredUrl) {
+        URI uri = linkExtractor.toUri(discoveredUrl);
+        if (uri == null) {
+            return false;
+        }
+
+        String path = uri.getPath();
+        if (path == null || path.isBlank() || path.endsWith("/")) {
+            return false;
+        }
+
+        int dotIndex = path.lastIndexOf('.');
+        if (dotIndex < 0 || dotIndex == path.length() - 1) {
+            return false;
+        }
+
+        String extension = path.substring(dotIndex + 1).toLowerCase(Locale.ROOT);
+        return switch (extension) {
+            case "pdf", "jpg", "jpeg", "png", "gif", "webp", "svg", "ico", "bmp",
+                    "mp3", "wav", "ogg", "m4a", "mp4", "webm", "mov", "avi",
+                    "css", "js", "map", "woff", "woff2", "ttf", "otf", "eot",
+                    "zip", "rar", "7z", "tar", "gz", "tgz", "exe", "dmg", "pkg",
+                    "doc", "docx", "xls", "xlsx", "ppt", "pptx", "csv", "json", "xml" -> true;
+            default -> false;
+        };
     }
 
     private void finalizeRun(CrawlCallbacks callbacks) {
