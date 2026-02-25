@@ -116,16 +116,28 @@ public class CrawlerEngine {
                 continue;
             }
 
+            System.out.println("[HAM] Visiting URL | " + nextUrl);
             activeWorkers.incrementAndGet();
             lastUrl.set(nextUrl);
             callbacks.onProgress(snapshot(nextUrl));
             try {
                 Document document = fetchService.fetch(nextUrl);
                 if (document == null) {
+                    System.out.println("[HAM] Skipped non-HTML or unreadable URL | " + nextUrl);
                     continue;
                 }
 
-                for (String discoveredUrl : linkExtractor.extractLinks(document, nextUrl)) {
+                String pageTitle = document.title();
+                if (pageTitle == null || pageTitle.isBlank()) {
+                    pageTitle = "(untitled page)";
+                }
+                System.out.println("[HAM] Page Title | " + pageTitle + " | URL=" + nextUrl);
+
+                Set<String> discoveredUrls = linkExtractor.extractLinks(document, nextUrl);
+                System.out.println("[HAM] Discovered " + discoveredUrls.size() + " links/assets on page | " + nextUrl);
+
+                for (String discoveredUrl : discoveredUrls) {
+                    System.out.println("[HAM] Found Link/Asset | " + discoveredUrl + " | from=" + nextUrl);
                     if (!isAllowedByMode(startUri, discoveredUrl, options.mode())) {
                         continue;
                     }
