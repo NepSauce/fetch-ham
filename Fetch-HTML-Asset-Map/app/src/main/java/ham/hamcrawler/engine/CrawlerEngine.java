@@ -81,12 +81,19 @@ public class CrawlerEngine {
         running.set(true);
         stopRequested.set(false);
 
+        String normalizedStartUrl = normalizeUrl(options.startUrl());
+        if (normalizedStartUrl == null) {
+            callbacks.onError("Invalid start URL.", null);
+            running.set(false);
+            return;
+        }
+
         int threadCount = Math.max(1, options.threadCount());
-        queue.offer(options.startUrl());
-        scheduled.add(options.startUrl());
+        queue.offer(normalizedStartUrl);
+        scheduled.add(normalizedStartUrl);
         discoveredCount.incrementAndGet();
         pendingUrls.set(1);
-        HamBugLogger.log("[HAM] Crawl started | url=" + options.startUrl() + " | mode=" + options.mode() + " | threads=" + threadCount);
+        HamBugLogger.log("[HAM] Crawl started | url=" + normalizedStartUrl + " | mode=" + options.mode() + " | threads=" + threadCount);
 
         callbacks.onStarted(options);
 
@@ -124,10 +131,10 @@ public class CrawlerEngine {
     }
 
     private void workerLoop(CrawlOptions options, CrawlCallbacks callbacks) {
-        URI startUri = linkExtractor.toUri(options.startUrl());
+        URI startUri = linkExtractor.toUri(normalizeUrl(options.startUrl()));
 
         while (running.get()) {
-            String nextUrl = queue.poll();
+            String nextUrl = normalizeUrl(queue.poll());
             if (nextUrl == null) {
                 if (pendingUrls.get() == 0) {
                     running.set(false);
@@ -173,20 +180,25 @@ public class CrawlerEngine {
                 HamBugLogger.log("[" + workerName + "] discovered=" + discoveredUrls.size() + " links/assets | page=" + nextUrl);
 
                 for (String discoveredUrl : discoveredUrls) {
-                    if (!isAllowedByMode(startUri, discoveredUrl, options.mode())) {
+                    String canonicalDiscoveredUrl = normalizeUrl(discoveredUrl);
+                    if (canonicalDiscoveredUrl == null) {
                         continue;
                     }
 
-                    if (!shouldQueueDiscoveredUrl(discoveredUrl, options)) {
-                        HamBugLogger.log("[" + workerName + "] skipped-non-html=" + discoveredUrl + " | from=" + nextUrl);
+                    if (!isAllowedByMode(startUri, canonicalDiscoveredUrl, options.mode())) {
                         continue;
                     }
 
-                    if (scheduled.add(discoveredUrl)) {
-                        queue.offer(discoveredUrl);
+                    if (!shouldQueueDiscoveredUrl(canonicalDiscoveredUrl, options)) {
+                        HamBugLogger.log("[" + workerName + "] skipped-non-html=" + canonicalDiscoveredUrl + " | from=" + nextUrl);
+                        continue;
+                    }
+
+                    if (scheduled.add(canonicalDiscoveredUrl)) {
+                        queue.offer(canonicalDiscoveredUrl);
                         pendingUrls.incrementAndGet();
                         discoveredCount.incrementAndGet();
-                        HamBugLogger.log("[" + workerName + "] found=" + discoveredUrl + " | from=" + nextUrl);
+                        HamBugLogger.log("[" + workerName + "] found=" + canonicalDiscoveredUrl + " | from=" + nextUrl);
                     }
                 }
             } catch (Exception exception) {
@@ -318,6 +330,14 @@ public class CrawlerEngine {
             return normalized.substring(0, 120) + "...";
         }
         return normalized;
+    }
+
+    private String normalizeUrl(String rawUrl) {
+        URI uri = linkExtractor.toUri(rawUrl);
+        if (uri == null) {
+            return null;
+        }
+        return linkExtractor.normalize(uri);
     }
 
     private boolean isAllowedByRobots(String url, CrawlOptions options) {
