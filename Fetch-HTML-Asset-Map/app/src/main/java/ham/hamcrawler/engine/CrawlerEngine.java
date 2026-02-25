@@ -189,9 +189,6 @@ public class CrawlerEngine {
                     }
 
                     if (!isAllowedByMode(startUri, canonicalDiscoveredUrl, options.mode())) {
-                        if (options.mode() == CrawlMode.CONTAINED) {
-                            HamBugLogger.log("[" + workerName + "] skipped-contained=" + canonicalDiscoveredUrl + " | from=" + nextUrl);
-                        }
                         continue;
                     }
 
