@@ -1,7 +1,9 @@
 package ham.hamcrawler.engine;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -13,6 +15,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -30,6 +34,7 @@ public class CrawlerEngine {
     private final ConcurrentLinkedQueue<String> queue;
     private final Set<String> visited;
     private final Set<String> scheduled;
+    private final Map<String, RobotsRules> robotsRulesCache;
 
     private ExecutorService executor;
     private AtomicBoolean running;
@@ -45,6 +50,7 @@ public class CrawlerEngine {
         this.queue = new ConcurrentLinkedQueue<>();
         this.visited = ConcurrentHashMap.newKeySet();
         this.scheduled = ConcurrentHashMap.newKeySet();
+        this.robotsRulesCache = new ConcurrentHashMap<>();
         this.running = new AtomicBoolean(false);
         this.stopRequested = new AtomicBoolean(false);
         this.activeWorkers = new AtomicInteger(0);
@@ -142,6 +148,11 @@ public class CrawlerEngine {
             lastUrl.set(nextUrl);
             callbacks.onProgress(snapshot(nextUrl));
             try {
+                if (!isAllowedByRobots(nextUrl, options)) {
+                    HamBugLogger.log("[" + workerName + "] skipped-robots=" + nextUrl);
+                    continue;
+                }
+
                 Document document = fetchService.fetch(nextUrl);
                 if (document == null) {
                     HamBugLogger.log("[" + workerName + "] visited=" + nextUrl + " | title=<non-html>");
@@ -309,6 +320,182 @@ public class CrawlerEngine {
         return normalized;
     }
 
+    private boolean isAllowedByRobots(String url, CrawlOptions options) {
+        if (!options.respectRobots()) {
+            return true;
+        }
+
+        URI uri = linkExtractor.toUri(url);
+        if (uri == null) {
+            return true;
+        }
+
+        String origin = getOrigin(uri);
+        if (origin == null) {
+            return true;
+        }
+
+        RobotsRules rules = robotsRulesCache.computeIfAbsent(origin, this::loadRobotsRules);
+        return rules.isAllowed(uri.getPath());
+    }
+
+    private String getOrigin(URI uri) {
+        String host = uri.getHost();
+        String scheme = uri.getScheme();
+        if (host == null || scheme == null) {
+            return null;
+        }
+
+        int port = uri.getPort();
+        if (port > -1) {
+            return scheme + "://" + host + ":" + port;
+        }
+        return scheme + "://" + host;
+    }
+
+    private RobotsRules loadRobotsRules(String origin) {
+        try {
+            Connection.Response response = Jsoup.connect(origin + "/robots.txt")
+                    .userAgent("FetchHam/1.0")
+                    .timeout(10_000)
+                    .ignoreHttpErrors(true)
+                    .followRedirects(true)
+                    .execute();
+
+            if (response.statusCode() >= 400) {
+                return RobotsRules.allowAll();
+            }
+
+            return RobotsRules.parse(response.body());
+        } catch (Exception exception) {
+            return RobotsRules.allowAll();
+        }
+    }
+
+    private static class RobotsRules {
+        private final Set<String> allowPaths;
+        private final Set<String> disallowPaths;
+
+        private RobotsRules(Set<String> allowPaths, Set<String> disallowPaths) {
+            this.allowPaths = allowPaths;
+            this.disallowPaths = disallowPaths;
+        }
+
+        static RobotsRules allowAll() {
+            return new RobotsRules(Set.of(), Set.of());
+        }
+
+        static RobotsRules parse(String robotsText) {
+            if (robotsText == null || robotsText.isBlank()) {
+                return allowAll();
+            }
+
+            Set<String> allow = new HashSet<>();
+            Set<String> disallow = new HashSet<>();
+            boolean applies = false;
+
+            for (String rawLine : robotsText.split("\\R")) {
+                String line = stripComment(rawLine).trim();
+                if (line.isBlank()) {
+                    continue;
+                }
+
+                int separatorIndex = line.indexOf(':');
+                if (separatorIndex <= 0) {
+                    continue;
+                }
+
+                String key = line.substring(0, separatorIndex).trim().toLowerCase(Locale.ROOT);
+                String value = line.substring(separatorIndex + 1).trim();
+
+                if ("user-agent".equals(key)) {
+                    applies = "*".equals(value);
+                    continue;
+                }
+
+                if (!applies) {
+                    continue;
+                }
+
+                if ("allow".equals(key)) {
+                    String rule = normalizeRule(value);
+                    if (rule != null) {
+                        allow.add(rule);
+                    }
+                } else if ("disallow".equals(key)) {
+                    String rule = normalizeRule(value);
+                    if (rule != null) {
+                        disallow.add(rule);
+                    }
+                }
+            }
+
+            return new RobotsRules(allow, disallow);
+        }
+
+        boolean isAllowed(String rawPath) {
+            String path = (rawPath == null || rawPath.isBlank()) ? "/" : rawPath;
+
+            String winningAllow = longestMatching(path, allowPaths);
+            String winningDisallow = longestMatching(path, disallowPaths);
+
+            if (winningAllow == null && winningDisallow == null) {
+                return true;
+            }
+            if (winningAllow == null) {
+                return false;
+            }
+            if (winningDisallow == null) {
+                return true;
+            }
+
+            return winningAllow.length() >= winningDisallow.length();
+        }
+
+        private static String longestMatching(String path, Set<String> rules) {
+            String best = null;
+            for (String rule : rules) {
+                if (rule.isEmpty()) {
+                    continue;
+                }
+
+                if (path.startsWith(rule) && (best == null || rule.length() > best.length())) {
+                    best = rule;
+                }
+            }
+            return best;
+        }
+
+        private static String stripComment(String line) {
+            int commentIndex = line.indexOf('#');
+            if (commentIndex < 0) {
+                return line;
+            }
+            return line.substring(0, commentIndex);
+        }
+
+        private static String normalizeRule(String value) {
+            if (value == null) {
+                return null;
+            }
+
+            String cleaned = value.trim();
+            if (cleaned.isBlank()) {
+                return null;
+            }
+            if (!cleaned.startsWith("/")) {
+                cleaned = "/" + cleaned;
+            }
+
+            int wildcardIndex = cleaned.indexOf('*');
+            if (wildcardIndex >= 0) {
+                cleaned = cleaned.substring(0, wildcardIndex);
+            }
+
+            return cleaned;
+        }
+    }
+
     private CrawlStatus snapshot(String currentUrl) {
         return new CrawlStatus(
                 discoveredCount.get(),
@@ -323,6 +510,7 @@ public class CrawlerEngine {
         queue.clear();
         visited.clear();
         scheduled.clear();
+        robotsRulesCache.clear();
         discoveredCount.set(0);
         activeWorkers.set(0);
         pendingUrls.set(0);
